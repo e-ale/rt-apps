@@ -1,0 +1,29 @@
+#!/bin/sh
+
+input=/dev/input/event0
+
+if [ ! -c $input ]; then
+	echo "error: $input not found (paddle loaded?)"
+	exit 1
+fi
+
+last_val=0
+evtest $input | while read line; do
+	ledpid=$(pidof ledmirror)
+	test -z $ledpid && continue
+
+	val=$(echo "$line" | grep 'ABS_X.*value' | sed -e 's/.*value //')
+	test -z $val && continue
+
+	scaled_val=$(expr $val / 102)
+	nice_val=$(expr $scaled_val - 21)
+	if [ $nice_val -eq -21 ]; then
+		test $last_val -ne $nice_val && echo "setting to real-time"
+		chrt -p -f 1 $ledpid
+	else
+		test $last_val -ne $nice_val && echo "setting to nice $nice_val"
+		chrt -p -o 0 $ledpid
+		renice -n $nice_val $ledpid > /dev/null 2>&1
+	fi
+	last_val=$nice_val
+done
