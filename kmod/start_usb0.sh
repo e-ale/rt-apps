@@ -24,3 +24,6 @@ ln -s functions/ecm.usb0 configs/c.1
 echo musb-hdrc.0 > UDC
 
 ifup usb0
+
+sleep 2
+/etc/init.d/dhcp-server start

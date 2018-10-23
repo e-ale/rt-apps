@@ -1,0 +1,14 @@
+These are various "fix up" files for the board.
+
+hacking-module-versions.txt
+  - instructions for building external modules
+
+modules.tar.gz
+  - modules for usb gadget ethernet and paddle
+
+zImage
+  - the original zImage file from Elizabeth Flanagan
+    (unfortunately the zImage from Chris Simmonds has no IIO support)
+
+start_usb0.sh
+  - a script to start the usb gadget ethernet

@@ -1,0 +1,27 @@
+#
+# Here are instructions for building external modules by *hacking* a
+# different version. This is necessary because unfortunately the
+# generated files from the original kernel build no longer exists.
+#
+
+export PATH=~/e-ale-intro/gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf/bin:$PATH
+
+cd ~/e-ale-intro/linux-kernel
+ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make oldconfig
+ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make modules_prepare
+
+# remove the "+" from include/generated/utsrelease.h
+cat include/generated/utsrelease.h
+
+cd ~/paddle
+ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make -C ~/e-ale-intro/linux-kernel M=$(pwd) modules
+
+# now you should have a "paddle.ko" file, copy this to your sd card
+
+# from the booted board...
+
+insmod ./paddle.ko
+
+evtest /dev/input/event0
+
+# play with the thumbwheel and button
