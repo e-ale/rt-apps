@@ -1,0 +1,55 @@
+\section{Evaluating Real-Time Systems}
+
+\begin{frame}
+   {How to Evaluate a Real-Time System?}
+
+   \begin{itemize}
+      \item
+      Use the \textbf{cyclictest} tool. (Part of the \textbf{rt-tests} package.)
+      \begin{itemize}
+         \item
+         measures/tracks latencies from hardware interrupt to userspace
+         \item
+         run at the priority level to evaluate
+      \end{itemize}
+      \item
+      Generate worst case system loads.
+      \begin{itemize}
+         \item
+         scheduling load: the \textbf{hackbench} tool
+         \item
+         interrupt load: flood pinging with ''\texttt{ping -f}''
+         \item
+         serial/network load: ''\texttt{top -d 0}'' via console and network shells
+         \item
+         memory loads: OOM killer invocations
+         \item
+         various load scenarios: the \textbf{stress-ng} tool
+      \end{itemize}
+   \end{itemize}
+
+\end{frame}
+
+\cprotect\note{
+
+   Loads should be generated for hardware devices that will be in use on
+   the device. If it has USB, generate USB loads. If it has a display,
+   generate graphic loads. Etc...
+
+   It is important that \textbf{cyclictest} is run at the correct
+   priority for the tests. Otherwise the results may be worse than they
+   should be. If testing the overall real-time performance for the system,
+   it is common to start \textbf{cyclictest} with:
+   \begin{raw}
+cyclictest -S -m -p 98 --secaligned
+   \end{raw}
+
+   Note that real-time priority 99 should never be used by userspace
+   software. This highest priority is used by critical kernel tasks that
+   should never be interrupted by userspace software.
+
+   If you are unhappy with the latency results (and your are sure that
+   you performed the test correctly), be aware that there are many
+   kernel options available to tune the real-time performance of Linux.
+
+}

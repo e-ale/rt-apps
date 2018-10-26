@@ -1,0 +1,79 @@
+\section{Controlling Memory}
+
+\begin{frame}
+   {Avoid Page Faults}
+
+   \begin{itemize}
+      \item
+      \textbf{Tune glibc's malloc} to avoid memory mapping as a
+      form of memory allocation. mmap'd memory cannot be reused
+      after being freed.
+      \item
+      \textbf{Lock down allocated pages} so that they cannot be returned
+      to the kernel. Hold on to what you've been given.
+      \item
+      \textbf{Prefault} the heap and the stack(s).
+   \end{itemize}
+
+\end{frame}
+
+\cprotect\note{
+
+   The \textbf{malloc} function of glibc can be tuned using the
+   \textbf{mallopt} function. Below are the calls to disable memory
+   mapping as a form of memory allocation. This is important
+   because glibc cannot reuse freed memory if it has been allocated
+   using \textbf{mmap}. Such memory is managed directly by the
+   kernel.
+   \begin{raw}
+#include <malloc.h>
+
+mallopt(M_TRIM_THRESHOLD, -1);
+mallopt(M_MMAP_MAX, 0);
+   \end{raw}
+
+   Memory pages can be locked down with the \textbf{mlockall} function:
+   \begin{raw}
+#include <sys/mman.h>
+
+mlockall(MCL_CURRENT | MCL_FUTURE);
+   \end{raw}
+
+   An example of heap prefaulting:
+   \begin{raw}
+#include <stdlib.h>
+#include <unistd.h>
+
+void prefault_heap(int size)
+{
+    char *dummy;
+    int i;
+
+    dummy = malloc(size);
+    if (!dummy)
+        return;
+
+    for (i = 0; i < size; i += sysconf(_SC_PAGESIZE))
+        dummy[i] = i;
+
+    free(dummy);
+}
+   \end{raw}
+
+   An example of stack prefaulting:
+   \begin{raw}
+#include <unistd.h>
+
+#define MAX_SAFE_STACK (512 * 1024)
+
+void prefault_stack(void)
+{
+    unsigned char dummy[MAX_SAFE_STACK];
+    int i;
+
+    for (i = 0; i < MAX_SAFE_STACK; i += sysconf(_SC_PAGESIZE))
+        dummy[i] = i;
+}
+   \end{raw}
+
+}

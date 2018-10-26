@@ -1,0 +1,68 @@
+\section{Limiting/Isolating CPUs}
+
+\begin{frame}
+   {CPU Affinity}
+
+   \begin{itemize}
+      \item
+      Each task has its own CPU affinity mask, specifying which CPUs
+      it may be scheduled on.
+      \item
+      Boot parameters are available to set default masks for all tasks
+      (including the kernel's own tasks).
+      \item
+      A CPU affinity mask for routing individual hardware interrupt
+      handling is also available.
+   \end{itemize}
+
+\end{frame}
+
+\cprotect\note{
+
+   By isolating real-time tasks on CPUs, the real-time performance can
+   be further increased. Less interruptions usually translates to less
+   latency. Just be aware that SMP systems usually have multiple CPUs
+   sharing caches. Unfortunately this means that non-real-time tasks
+   can influence a real-time task, even if that task is completely
+   isolated on its own CPU:
+
+   The CPU affinity mask can be set using the \textbf{taskset} command:
+   \begin{raw}
+taskset [options] mask command [arg]...
+taskset [options] -p [mask] pid
+   \end{raw}
+
+   ... or in code:
+   \begin{raw}
+#define _GNU_SOURCE
+#include <sched.h>
+
+cpu_set_t set;
+
+CPU_ZERO(&set);
+CPU_SET(0, &set);
+CPU_SET(1, &set);
+sched_setaffinity(pid, CPU_SETSIZE, &set);
+   \end{raw}
+
+   Kernel parameters related to CPU isolation:
+
+   \begin{itemize}
+      \item
+      maxcpus=\textit{n}: limits the kernel to bring up \textit{n} CPUs
+      \item
+      isolcpus=\textit{cpulist}: specify CPUs to isolate from disturbances
+   \end{itemize}
+
+   The default CPU affinity for routing hardware interrupts when new
+   interrupt handlers are registered can be viewed/set in:
+
+   \texttt{/proc/irq/default\_smp\_affinity}.
+
+   The CPU affinity for routing hardware interrupts for already registered
+   interrupt handlers can be viewed/set in:
+
+   \texttt{/proc/irq/}\textit{irq-number}\texttt{/smp\_affinity}.
+
+}
+

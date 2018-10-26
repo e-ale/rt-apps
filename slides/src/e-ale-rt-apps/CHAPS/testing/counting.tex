@@ -1,0 +1,56 @@
+\section{Performance Counters and Events}
+
+\begin{frame}
+   {perf}
+
+   \begin{itemize}
+      \item
+      \textbf{perf} is a tool that can count various types of hardware
+      and software events.
+      \item
+      Some examples: CPU cycles, page faults, cache misses,
+      context switches, scheduling events, ...
+      \item
+      It can help to identify performance issues with real-time tasks
+      by showing if certain types of latency causing events are occurring.
+   \end{itemize}
+
+\end{frame}
+
+\cprotect\note{
+
+   Versions of \textbf{perf} may depend on certain kernel versions/features.
+   For this reason it is important that the correct \textbf{perf} version
+   is used. \textbf{perf} is part of the Linux kernel source, in
+   \texttt{tools/perf}. It is best to use the version that comes from the
+   same source as the running kernel.
+
+   \textbf{perf} has many features and the help is spread across many
+   man pages. However, \textbf{perf} can automatically open the correct man
+   pages:
+   \begin{raw}
+perf help
+perf help <command>
+   \end{raw}
+
+   List all supported events:
+   \begin{raw}
+perf list
+   \end{raw}
+
+   Count the number of CPU cycles and page faults on a system over 5 seconds:
+   \begin{raw}
+perf stat -a -e cpu-cycles -e page-faults sleep 5
+   \end{raw}
+
+   Count the number of context switches for the LED tools over 5 seconds:
+   \begin{raw}
+perf stat -a -e cpu-cycles -e context-switches -p $(pidof ledmaster),$(pidof ledmirror) sleep 5
+   \end{raw}
+
+   View the top symbols causing cache misses on the first CPU (with \textbf{perf} pinned to the second CPU):
+   \begin{raw}
+taskset 2 perf top -C 0 -e cache-misses
+   \end{raw}
+
+}

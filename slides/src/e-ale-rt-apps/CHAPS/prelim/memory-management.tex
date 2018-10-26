@@ -1,0 +1,46 @@
+\section{Understanding Memory Management}
+
+\begin{frame}
+   {Page Faulting}
+
+   By default, physical memory pages are mapped to the virtual
+   address space \textbf{on demand}. This allows features such as
+   over-commitment and it affects \textbf{all} virtual memory of
+   a process:
+
+   \begin{itemize}
+      \item
+      text segment
+      \item
+      initialized data segment
+      \item
+      uninitialized data segment
+      \item
+      stack(s)
+      \item
+      heap
+   \end{itemize}
+
+\end{frame}
+
+\cprotect\note{
+
+   As an example, when a task allocates memory, the kernel will
+   tell the task that the memory has been allocated and return a
+   virtual address pointer to such memory. However, no actual
+   physical memory has been reserved. It is not until the task
+   starts reading/writing to the memory, that the kernel will
+   actually find physical memory to map to it.
+
+   When virtual memory is accessed that has no physical memory
+   mapping, this generates a page fault in the memory management
+   unit (MMU). The kernel's exception handler will catch this
+   and scramble to find a free page of physical memory to map.
+   If no physical memory is available, and there are no mapped
+   pages that can be paged out, the kernel will invoke the out
+   of memory (OOM) killer.
+
+   In summary, malloc's are cheap and first accesses are
+   expensive.
+
+}

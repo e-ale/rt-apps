@@ -1,0 +1,63 @@
+\section{Scheduling with Real-Time}
+
+\begin{frame}
+   {Scheduling Policies}
+
+   Real-Time Policies:
+
+   \begin{itemize}
+      \item
+      \textbf{SCHED\_FIFO}: static priority (1-99), can only lose the CPU to higher priority tasks or hardware interrupts
+      \item
+      \textbf{SCHED\_RR}: like SCHED\_FIFO but with round robin scheduling for tasks of the same priority
+      \item
+      \textbf{SCHED\_DEADLINE}: dynamic priority based on deadlines
+   \end{itemize}
+
+   Non-Real-Time Policies:
+
+   \begin{itemize}
+      \item
+      \textbf{SCHED\_OTHER}: dynamic time slices based on \textbf{nice} value
+      \item
+      \textbf{SCHED\_BATCH}: a disfavored SCHED\_OTHER
+      \item
+      \textbf{SCHED\_IDLE}: run only when otherwise idle
+   \end{itemize}
+
+\end{frame}
+
+\cprotect\note{
+
+   When dealing with real-time systems, generally only \textbf{SCHED\_FIFO}
+   and \textbf{SCHED\_RR} are of interest. However, these policies should
+   only be used on the real-time tasks. All other tasks of the system
+   will generally use \textbf{SCHED\_OTHER}, with varying \textbf{nice}
+   values to influence their time slices.
+
+   Be aware of \texttt{/proc/sys/kernel/sched\_rt\_runtime\_us}, which can
+   artificially limit real-time tasks. Set to \texttt{-1} to disable.
+
+   The scheduling policy can be set using the \textbf{chrt} command:
+   \begin{raw}
+Set policy:
+  chrt [opts] <policy> <prio> <pid>
+  chrt [opts] <policy> <prio> <cmd> [<arg> ...]
+
+Scheduling policies:
+-f, --fifo      set policy to SCHED_FIFO
+-o, --other     set policy to SCHED_OTHER
+-r, --rr        set policy to SCHED_RR (default)
+   \end{raw}
+
+   ... or in code:
+   \begin{raw}
+#include <sched.h>
+
+struct sched_param param;
+
+param.sched_priority = 80;
+sched_setscheduler(0, SCHED_FIFO, &param);
+   \end{raw}
+
+}

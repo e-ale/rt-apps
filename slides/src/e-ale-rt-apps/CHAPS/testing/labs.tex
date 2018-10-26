@@ -1,0 +1,24 @@
+\clearpage\section{Labs}\begin{Lab}
+
+\begin{exe} {Measure Wake Latencies}
+
+   Install \textbf{rt-tests}, \textbf{trace-cmd}, and
+   \textbf{kernelshark} packages on your laptop.
+
+   Record a trace with \textbf{cyclictest} running for 2 seconds.
+   \begin{raw}
+sudo trace-cmd record -e irq_vectors:local_timer_entry \
+                      -e irq_vectors:local_timer_exit \
+                      -e sched:sched_wakeup \
+                      -e sched:sched_switch \
+                      -e syscalls:sys_exit_clock_nanosleep \
+                      cyclictest -S -m -p 98 --secaligned -D 2 -q
+   \end{raw}
+
+   View the results and measure the components of the wakeup latency.
+   \begin{raw}
+kernelshark
+   \end{raw}
+\end{exe}
+
+\end{Lab}

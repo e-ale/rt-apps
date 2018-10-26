@@ -1,0 +1,35 @@
+\section{Real-Time API}
+
+\begin{frame}
+   {POSIX}
+
+   \begin{itemize}
+      \item
+      Linux real-time features are implemented using the POSIX
+      standard API. Most developers are already comfortable with
+      this interface.
+      \item
+      No exotic libraries.
+      \item
+      No exotic objects.
+      \item
+      No exotic functions.
+      \item
+      No exotic semantics.
+   \end{itemize}
+
+\end{frame}
+
+\cprotect\note{
+
+   Because the POSIX API is used, application developers can usually
+   learn to write real-time applications very quickly. Also, since
+   most Linux software is already written for POSIX, there is often
+   little effort in combining existing code bases with real-time
+   development.
+
+   The real-time API for Linux is essentially contained in the
+   \texttt{sched.h}, \texttt{time.h}, and \texttt{pthread.h} header
+   files.
+
+}

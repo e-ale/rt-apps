@@ -1,0 +1,30 @@
+\clearpage\section{Labs}\begin{Lab}
+
+\begin{exe} {Measure Real-Time Latencies}
+
+   Use \textbf{cyclictest} and various load generation
+   tools and methods to try to find a worst-case
+   latency for your system (your laptop and/or your
+   embedded board).
+
+   A good command line for cyclictest:
+   \begin{raw}
+cyclictest -S -m -p 98 --secaligned
+   \end{raw}
+
+   Some ideas for load generation:
+   \begin{raw}
+while true; do hackbench; done
+   \end{raw}
+   \begin{raw}
+ping -f 192.168.7.2
+   \end{raw}
+   \begin{raw}
+top -d 0
+   \end{raw}
+   \begin{raw}
+while true; do echo -n; done
+   \end{raw}
+\end{exe}
+
+\end{Lab}

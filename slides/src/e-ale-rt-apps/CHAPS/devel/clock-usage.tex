@@ -1,0 +1,60 @@
+\section{Using Clocks}
+
+\begin{frame}
+   {The Monotonic Clock}
+
+   \begin{itemize}
+      \item
+      Use the POSIX functions that allow clock specification. These
+      begin with \textbf{clock\_}.
+      \item
+      \textbf{Choose CLOCK\_MONOTONIC}. This is a clock that cannot be
+      set and represents monotonic time since some unspecified starting
+      point.
+      \item
+      \textbf{Do not use CLOCK\_REALTIME}. This is a clock that represents
+      the "real" time. For example, Tuesday 23 October 2018 17:00:00.
+      This clock can be set by NTP, the user, etc.
+      \item
+      \textbf{Use absolute time values}. Calculating relative times is error prone
+      because the calculation itself takes time.
+   \end{itemize}
+
+\end{frame}
+
+\cprotect\note{
+
+   When using \textbf{CLOCK\_MONOTONIC} and absolute times, a cyclical
+   task becomes trivial to implement.
+   \begin{raw}
+#include <time.h>
+
+#define CYCLE_TIME_NS (100 * 1000 * 1000) 
+#define NSEC_PER_SEC (1000 * 1000 * 1000)
+
+static void norm_ts(struct timespec *tv)
+{
+    while (tv->tv_nsec > NSEC_PER_SEC) {
+        tv->tv_sec++;
+        tv->tv_nsec -= NSEC_PER_SEC;
+    }
+}
+
+void cycle_task(void)
+{
+    struct timespec tv;
+
+    clock_gettime(CLOCK_MONOTONIC, &tv);
+
+    while (1) {
+        /* do the work */
+
+        /* wait for next cycle */
+        tv.tv_nsec += CYCLE_TIME_NS;
+        norm_ts(&tv);
+        clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &tv, NULL);
+    };
+}
+   \end{raw}
+
+}

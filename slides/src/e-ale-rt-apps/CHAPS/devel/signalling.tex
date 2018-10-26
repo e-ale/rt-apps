@@ -1,0 +1,86 @@
+\section{Signalling}
+
+\begin{frame}
+   {Conditional Variables}
+
+   \begin{itemize}
+      \item
+      \textbf{Use pthread\_cond objects} for notifying tasks.
+      These can be associated with pthread\_mutex objects to provide
+      synchronized notification.
+      \item
+      Do not use signals (such as POSIX timers or the kill() function).
+      They involve unclear and limited contexts, do not provide any
+      synchronization, and are difficult to program correctly.
+      \item
+      Activate the shared feature \textbf{if} the conditional variable
+      is accessed by multiple processes in shared memory.
+      \item
+      The sender should notify the receiver \textbf{before} releasing
+      the lock associated with the conditional variable.
+   \end{itemize}
+
+\end{frame}
+
+\cprotect\note{
+
+   Here is an example showing the syntax and semantics
+   of conditional variable initialization.
+   \begin{raw}
+#include <pthread.h>
+
+pthread_condattr_t cattr;
+pthread_cond_t cond;
+
+pthread_condattr_init(&cattr);
+pthread_cond_init(&cond, &cattr);
+   \end{raw}
+
+}
+
+\begin{frame}
+   {Signalling (code snippet)}
+
+   \begin{raw}
+#include <pthread.h>
+
+pthread_mutex_t lock;
+pthread_cond_t cond;
+   \end{raw}
+
+   Code of receiver:
+   \begin{raw}
+pthread_mutex_lock(&lock);
+pthread_cond_wait(&cond, &lock);
+/* we have been signaled */
+pthread_mutex_unlock(&lock);
+   \end{raw}
+
+   Code of sender:
+   \begin{raw}
+pthread_mutex_lock(&lock);
+/* do the work */
+pthread_cond_broadcast(&cond);
+pthread_mutex_unlock(&lock);
+   \end{raw}
+
+\end{frame}
+
+\cprotect\note{
+
+   There have been many discussions on the usefulness of sending the signal
+   while holding the lock. Indeed, with the glibc and kernel implementations
+   for SMP systems, this procedure does not provide any real advantages.
+
+   However, using the POSIX API in this way allows for some (future)
+   implementation where it can make an important difference.
+
+   The main concern is what happens when the sender releases the lock. If
+   a high priority task has been waiting, it is only fair that it gets
+   the lock before a lower priority task. By signalling waiters before
+   the lock has been released, the operating system is given the
+   opportunity to prepare for who will get the lock \textbf{before} the
+   lock has been released. This can provide the fairness necessary to
+   avoid priority inversion.
+
+}

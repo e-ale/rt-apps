@@ -1,0 +1,51 @@
+\section{Locking}
+
+\begin{frame}
+   {Synchronization}
+
+   \begin{itemize}
+      \item
+      \textbf{Use the pthread\_mutex as the lock}. These objects
+      have owners (unlike semaphores) so the kernel can more
+      intelligently choose which processes to schedule.
+      \item
+      \textbf{Activate priority inheritance}. Unfortunately this
+      is not the default.
+      \item
+      Activate shared and robustness features \textbf{if} the lock
+      is accessed by multiple processes in shared memory.
+   \end{itemize}
+
+\end{frame}
+
+\cprotect\note{
+
+   Here is a trivial example showing the syntax and semantics
+   of lock initialization and usage.
+   \begin{raw}
+#include <pthread.h>
+
+pthread_mutex_t lock;
+pthread_mutexattr_t mattr;
+
+pthread_mutexattr_init(&mattr);
+pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
+pthread_mutex_init(&lock, &mattr);
+
+pthread_mutex_lock(&lock);
+/* do critical work */
+pthread_mutex_unlock(&lock);
+
+pthread_mutex_destroy(&lock);
+   \end{raw}
+
+   The feature \textbf{PTHREAD\_PROCESS\_SHARED} should only be set
+   if the lock resides in shared memory. Locks marked with this
+   feature have additional overhead because they cannot use the
+   fast userspace mutex (futex) implementation.
+
+   Be aware that activating \textbf{PTHREAD\_MUTEX\_ROBUST} introduces
+   new semantics for \textbf{phread\_mutex\_lock()}. Make sure you fully
+   understand its usage, otherwise you may have broken synchronization.
+
+}

@@ -1,0 +1,67 @@
+\section{Checklist}
+
+\begin{frame}
+   {Real-Time Checklist}
+
+   \small{
+      \begin{multicols}{2}
+         Real-Time Priority
+         \begin{itemize}
+            \item SCHED\_FIFO, SCHED\_RR
+         \end{itemize}
+
+         CPU Affinity
+         \begin{itemize}
+            \item applications
+            \item interrupt handlers
+            \item interrupt routing
+         \end{itemize}
+
+         Memory Management
+         \begin{itemize}
+            \item avoid mmap() with malloc()
+            \item lock memory
+            \item prefault memory
+         \end{itemize}
+
+         Time and Sleeping
+         \begin{itemize}
+            \item use monotonic clock
+            \item use absolute time
+         \end{itemize}
+
+         Avoid Signals
+         \begin{itemize}
+            \item such as POSIX timers
+            \item such as kill()
+         \end{itemize}
+
+         Avoid Priority Inversion
+         \begin{itemize}
+            \item use pthread\_mutex \\ (and set attributes!)
+            \item use pthread\_cond \\ (and set attributes!)
+         \end{itemize}
+
+         Be aware of NMIs
+
+         Verify Results
+         \begin{itemize}
+            \item trace scheduling
+            \item trace page faults
+            \item monitor traces
+         \end{itemize}
+      \end{multicols}
+   }
+
+\end{frame}
+
+\cprotect\note{
+
+   Although this is not an exhaustive checklist, it should provide
+   a broad set of things to consider. And remember, the presented
+   tools and methods are only as good as the application code. In
+   fact, these tools and methods will require your code to
+   improve because now the real-time performance can be easily
+   measured, analyzed, and verified.
+
+}
